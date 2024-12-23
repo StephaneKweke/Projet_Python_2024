@@ -1,10 +1,9 @@
-
-def time_series_france(polluants: list):
-    time_trends_2023 = time_trends.loc['2023-01-01':'2023-12-31']
-    time_trends_2024 = time_trends.loc['2024-01-01':'2024-12-31']
+    
+def time_series_france(polluants: list, time_trends_2023, time_trends_2024):
+    import pandas as pd
+    import seaborn as sns
     sns.set_theme(style="whitegrid")
     plt.figure(figsize=(12, 6))
-
     # Traçage des tendances pour 2023
     time_trends_2023.plot(
         ax=plt.gca(),
@@ -34,7 +33,8 @@ def time_series_france(polluants: list):
     plt.show()
 
 
-def time_series_regions(polluants: list, df_final: pd.DataFrame):
+def time_series_regions(polluants: list, df_final):
+    import pandas as pd
     import matplotlib.pyplot as plt
     import seaborn as sns
 
