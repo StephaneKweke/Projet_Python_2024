@@ -393,3 +393,197 @@ def plot_climatic_histograms(df, var_climat, n_cols=3, width=20, height_per_row=
     # 6. Ajustement des espacements et affichage
     plt.tight_layout()
     plt.show()
+
+
+def plot_indice_atmo(data, france_geo, date):
+    """
+    Trace une carte des indices ATMO pour un jour donné.
+
+    Parameters:
+    - data (DataFrame): Contient les données avec les colonnes 'region', 'indice_atmo' et 'day'.
+    - france_geo (GeoDataFrame): GeoDataFrame des régions françaises avec géométries.
+    - date (str): Date au format 'YYYY-MM-DD' pour laquelle tracer la carte.
+    """
+    from matplotlib.colors import ListedColormap, BoundaryNorm
+    import matplotlib.pyplot as plt
+
+    # Définir les couleurs de l'indice ATMO
+    atmo_colors = ListedColormap([
+        "#50F0E6",  # Très bon : Vert clair
+        "#50CCAA",  # Bon : Vert
+        "#F0E641",  # Moyen : Jaune
+        "#FF8000",  # Médiocre : Orange
+        "#FF0000",  # Mauvais : Rouge
+        "#7D2181"   # Très mauvais : Violet
+    ])
+    bounds = [1, 2.5, 4.5, 5.5, 7.5, 9.5, 10.5]
+    norm = BoundaryNorm(bounds, atmo_colors.N)
+
+    # Filtrer les données pour la date spécifiée
+    data_filtered = data[data['day'] == date]
+
+    # Renommer les colonnes pour la jointure
+    france_geo = france_geo.rename(columns={"LIBELLE_REGION": "region"})
+
+    # Jointure entre données géographiques et environnementales
+    france_atmo = france_geo.merge(data_filtered[['region', 'indice_atmo']], on='region', how='left')
+
+    # Transformer en EPSG:3857 si nécessaire
+    if france_atmo.crs.to_string() != "EPSG:3857":
+        france_atmo = france_atmo.to_crs(epsg=3857)
+
+    # Limites de la carte
+    xmin, xmax = -0.75e6, 1.2e6  # Convertir les limites en mètres (EPSG:3857)
+    ymin, ymax = 5e6, 6.75e6
+
+    # Créer la figure
+    fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+    france_atmo.plot(
+        column="indice_atmo",
+        cmap=atmo_colors,
+        linewidth=0.8,
+        ax=ax,
+        edgecolor="black",
+        legend=False,  # Désactiver la légende automatique
+        norm=norm
+    )
+
+    # Ajout d'une barre de légende simplifiée
+    legend_labels = [
+        "Très bon", "Bon", "Moyen", "Médiocre", "Mauvais", "Très mauvais"
+    ]
+    colorbar = plt.cm.ScalarMappable(cmap=atmo_colors, norm=norm)
+    colorbar.set_array([])
+    cbar = fig.colorbar(
+        colorbar,
+        ax=ax,
+        orientation="horizontal",
+        fraction=0.04,
+        pad=0.08
+    )
+
+    # Positionnement et étiquettes de la légende
+    tick_positions = [(bounds[i] + bounds[i + 1]) / 2 for i in range(len(bounds) - 1)]
+    cbar.set_ticks(tick_positions)
+    cbar.set_ticklabels(legend_labels)
+
+    # Ajustement de la taille des étiquettes
+    cbar.ax.tick_params(labelsize=10)
+    cbar.outline.set_visible(False)
+    cbar.set_label("Qualité de l'air", fontsize=12)
+
+    # Titre de la carte
+    ax.set_title(f"Indice ATMO par région - {date}", fontsize=16)
+    ax.axis("off")
+
+    # Limites de la carte
+    ax.set_xlim(xmin, xmax)
+    ax.set_ylim(ymin, ymax)
+
+    # Afficher la carte
+    plt.show()
+
+
+
+
+def plot_atmo_maps(df, france, start_date, end_date):
+    """
+    Fonction pour tracer les cartes de l'Indice ATMO pour une plage de dates spécifique.
+    
+    Paramètres :
+    - df : DataFrame contenant les données environnementales avec les colonnes ['region', 'day', 'indice_atmo'].
+    - france : GeoDataFrame contenant les données géographiques des régions françaises.
+    - start_date : Début de la plage de dates (format 'AAAA-MM-JJ').
+    - end_date : Fin de la plage de dates (format 'AAAA-MM-JJ').
+    """
+
+    import matplotlib.patches as mpatches
+    from matplotlib.colors import ListedColormap, BoundaryNorm
+    import matplotlib.pyplot as plt
+    import pandas as pd
+    # Définir les couleurs et les bornes pour l'indice ATMO
+    atmo_colors = ListedColormap([
+        "#50F0E6",  # Très bon : Vert clair (Indice 1-2)
+        "#50CCAA",  # Bon : Vert (Indice 3-4)
+        "#F0E641",  # Moyen : Jaune (Indice 5)
+        "#FF8000",  # Médiocre : Orange (Indice 6-7)
+        "#FF0000",  # Mauvais : Rouge (Indice 8-9)
+        "#7D2181"   # Très mauvais : Violet (Indice 10)
+    ])
+    bounds = [1, 2.5, 4.5, 5.5, 7.5, 9.5, 10.5]
+    norm = BoundaryNorm(bounds, atmo_colors.N)
+
+    # Filtrer les données pour la plage de dates
+    dates_to_plot = pd.date_range(start=start_date, end=end_date)
+    data_filtered = df[df['day'].isin(dates_to_plot)]
+
+    # Renommer la colonne pour correspondre à la carte géographique
+    france = france.rename(columns={"LIBELLE_REGION": "region"})
+
+    # Créer un subplot pour chaque jour
+    n_rows = (len(dates_to_plot) + 3) // 4  # Calculer le nombre de lignes nécessaires
+    fig, axes = plt.subplots(n_rows, 4, figsize=(20, 5 * n_rows))  # Taille adaptée au nombre de figures
+    axes = axes.flatten()  # Aplatir la liste des axes pour itérer
+
+    # Pour chaque jour, tracer la carte correspondante
+    for i, day in enumerate(dates_to_plot):
+        france_atmo = france.merge(
+            data_filtered[data_filtered['day'] == day][['region', 'indice_atmo']],
+            on='region', 
+            how='left'
+        )
+
+        # Vérifier et convertir le CRS au format EPSG:3857 si nécessaire
+        if france_atmo.crs.to_string() != "EPSG:3857":
+            france_atmo = france_atmo.to_crs(epsg=3857)
+
+        # Définir les limites de la carte
+        xmin, xmax = -0.75e6, 1.2e6
+        ymin, ymax = 5e6, 6.75e6
+
+        # Tracer la carte sur l'axe correspondant
+        ax = axes[i]
+        france_atmo.plot(
+            column="indice_atmo",
+            cmap=atmo_colors,
+            linewidth=0.8,
+            ax=ax,
+            edgecolor="black",
+            legend=False,
+            norm=norm
+        )
+        ax.set_title(f"Indice ATMO - {day.strftime('%d/%m/%Y')}", fontsize=12)
+        ax.axis("off")
+        ax.set_xlim(xmin, xmax)
+        ax.set_ylim(ymin, ymax)
+
+    # Supprimer les axes inutilisés si le nombre de dates est inférieur à 4*n_rows
+    for j in range(len(dates_to_plot), len(axes)):
+        fig.delaxes(axes[j])
+
+    # Construire une légende manuelle
+    legend_labels = [
+        ("Très bon", "#50F0E6"),
+        ("Bon", "#50CCAA"),
+        ("Moyen", "#F0E641"),
+        ("Médiocre", "#FF8000"),
+        ("Mauvais", "#FF0000"),
+        ("Très mauvais", "#7D2181")
+    ]
+    legend_patches = [mpatches.Patch(color=color, label=label) for label, color in legend_labels]
+
+    # Ajouter une légende globale sous les cartes
+    fig.legend(
+        handles=legend_patches,
+        title="Qualité de l'air",
+        loc="lower center",
+        bbox_to_anchor=(0.5, -0.1),
+        ncol=3,
+        frameon=False,
+        fontsize=10
+    )
+
+    # Ajuster les marges et afficher les cartes
+    plt.tight_layout()
+    plt.show()
+
