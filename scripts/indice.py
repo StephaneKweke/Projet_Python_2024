@@ -60,7 +60,7 @@ def get_subindex_so2(value):
     else: return 10
     
 
-def atmo(df_hourly):
+def atmo(df_hourly, regions):
     
         # Calcul des moyennes journalières pour toutes les variables
     daily_data = df_hourly.groupby(['day', 'region']).agg({
@@ -69,7 +69,11 @@ def atmo(df_hourly):
         'nitrogen_dioxide': 'mean',
         'ozone': lambda x: x.rolling(8, min_periods=1).mean().max(),  # Max sur 8h glissantes
         'sulphur_dioxide': 'mean',
-        **{col: 'mean' for col in df_hourly.columns if col not in ['date', 'day', 'region', 'pm10', 'pm2_5', 'nitrogen_dioxide', 'ozone', 'sulphur_dioxide']}
+        'temperature_2m'  : 'mean',        
+        'relative_humidity_2m' : 'mean' , 
+        'precipitation'   : 'mean'  ,      
+        'surface_pressure'  : 'mean' ,    
+        'wind_speed_10m': 'mean'
     }).reset_index()
 
     # Calcul des sous-indices
@@ -87,5 +91,5 @@ def atmo(df_hourly):
     # Fusion avec le DataFrame original pour conserver uniquement les colonnes de df
     df_final = df_hourly[['day', 'region']].drop_duplicates().merge(daily_data, on=['day', 'region'], how='left')
     # Filtrage des régions européennes
-    df_final = df_final[df_final['region'].isin(regions_europe)]
+    df_final = df_final[df_final['region'].isin(regions)]
     return df_final
