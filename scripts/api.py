@@ -69,6 +69,12 @@ def recup_data(start_date, end_date, url, variables, region_centroides):
 
     # Concaténation de tous les DataFrames
     combined_dataframe = pd.concat(region_dataframes.values(), ignore_index=True)
+<<<<<<< HEAD
+    combined_dataframe['date'] = pd.to_datetime(combined_dataframe['date'])
+    # Création d'une nouvelle colonne 'day' contenant uniquement la date (sans l'heure)
+    combined_dataframe.insert(1,"day",combined_dataframe["date"].dt.date) 
+=======
+>>>>>>> origin
 
     return combined_dataframe
 
