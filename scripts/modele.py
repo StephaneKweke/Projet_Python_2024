@@ -4,6 +4,7 @@ from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.arima.model import ARIMA
 import matplotlib.pyplot as plt
 import pandas as pd
+from sklearn.metrics import root_mean_squared_error
 
 def stationarity_acf(data,var):
     """
@@ -92,3 +93,13 @@ def prevision_var(data,var,model_fit):
     plt.show()
     
     return forecast_df
+
+def indice_eval (polluants,forecast,data,test) :
+    
+    indice = 0 
+    sum_inv_mean = 0
+    for col in polluants : 
+        indice = indice + (root_mean_squared_error(forecast[col], test[col])/ data[col].mean())
+        sum_inv_mean=sum_inv_mean + (1/(data[col].mean()))
+    indice = indice/sum_inv_mean
+    return indice
