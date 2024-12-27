@@ -5,7 +5,7 @@ def time_series_france(polluants: list, time_trends_2023, time_trends_2024):
     polluants atmosphériques pour l’année 2023 et l’année 2024.
 
     Paramètres
-    ----------
+    ---------
     polluants : list
         Liste des noms de polluants analysés (ex. ["pm10", "pm2_5", "no2"]).
     time_trends_2023 : pandas.DataFrame ou pandas.Series
