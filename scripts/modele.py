@@ -28,6 +28,10 @@ def stationarity_acf(data,var):
     plot_acf(data[var])
     plot_pacf(data[var])
     plt.show()
+
+
+
+
     
 def fit_arima(data,var,p,d,q):
     """
@@ -45,8 +49,40 @@ def fit_arima(data,var,p,d,q):
     model_fit = model.fit() 
     return model_fit
 
-def prediction_arima(data,var,model_fit):
 
+
+
+def prediction_arima(data,var,model_fit):
+    """
+    Visualise les prédictions effectuées par un modèle ARIMA pour une variable donnée.
+
+    Parameters:
+    -----------
+    data : pandas.DataFrame
+        DataFrame contenant les données historiques avec au moins deux colonnes :
+        - 'day' : Les dates correspondantes.
+        - La variable cible spécifiée par `var`.
+    var : str
+        Nom de la variable cible (colonne dans `data`) à prédire.
+    model_fit : statsmodels.tsa.arima.model.ARIMAResults
+        Modèle ARIMA entraîné via statsmodels, utilisé pour générer les prédictions.
+
+    Description:
+    ------------
+    1. Trace les valeurs réelles de la variable cible à partir des données historiques.
+    2. Trace les prédictions générées par le modèle ARIMA entraîné.
+    3. Ajoute une légende pour différencier les valeurs réelles et prédites, et un titre spécifique à la variable.
+
+    Returns:
+    --------
+    None
+        La fonction affiche uniquement un graphique montrant les prédictions ARIMA et les valeurs réelles.
+
+    Notes:
+    ------
+    - La colonne 'day' dans `data` doit contenir des objets de type datetime ou équivalent pour un traçage correct.
+    - Le modèle ARIMA doit être préalablement entraîné sur les données fournies.
+    """
     #prediction
     plt.figure(figsize=(10, 6))
     plt.plot(data["day"],data[var], label="real",color="black")
@@ -54,8 +90,42 @@ def prediction_arima(data,var,model_fit):
     plt.title("Prédictions ARIMA {}".format(var))
     plt.legend()
     plt.show()
+
+
+
     
 def prevision_arima(data,var,model_fit):
+    """
+    Génère des prévisions à court terme à l'aide d'un modèle ARIMA et visualise les résultats.
+
+    Parameters:
+    -----------
+    data : pandas.DataFrame
+        DataFrame contenant les données historiques avec au moins deux colonnes :
+        - 'day' : Les dates correspondantes.
+        - La variable cible spécifiée par `var`.
+    var : str
+        Nom de la variable cible (colonne dans `data`) à prédire.
+    model_fit : statsmodels.tsa.arima.model.ARIMAResults
+        Modèle ARIMA entraîné via statsmodels, utilisé pour effectuer les prévisions.
+
+    Description:
+    ------------
+    1. Utilise le modèle ARIMA entraîné pour effectuer des prévisions sur une période de 14 jours.
+    2. Génère un graphique comparant l'historique des données avec les prévisions sur la période future.
+    3. Affiche un graphique avec les prévisions et renvoie les résultats sous forme de série.
+
+    Returns:
+    --------
+    pandas.Series
+        Les prévisions générées par le modèle ARIMA pour la période spécifiée (par défaut 14 jours).
+
+    Notes:
+    ------
+    - La colonne 'day' dans `data` doit contenir des objets de type datetime ou équivalent pour un traçage correct.
+    - Le modèle ARIMA doit être préalablement ajusté (fit) aux données historiques.
+    - Le nombre de jours pour les prévisions est fixé à 14 par défaut (2 semaines), mais peut être ajusté en modifiant `forecast_steps`.
+    """
     forecast_steps = 14 #2semaines
     forecast = model_fit.forecast(steps=forecast_steps)
     # Visualisation des prévisions
@@ -68,8 +138,14 @@ def prevision_arima(data,var,model_fit):
     plt.show()
     
     return forecast
+
+
+
+
+
     
 def residus(data,var,model_fit):
+    
     residuals = model_fit.resid
     plt.figure(figsize=(10, 6))
     plt.plot(residuals, label="Résidus")
@@ -80,6 +156,39 @@ def residus(data,var,model_fit):
     
 
 def prevision_var(data,var,model_fit):
+    """ 
+    Génère des prévisions à court terme à l'aide d'un modèle VAR et visualise les résultats.
+
+    Parameters:
+    -----------
+    data : pandas.DataFrame
+        DataFrame contenant les données historiques utilisées pour entraîner le modèle VAR.
+        Chaque colonne représente une variable incluse dans le modèle.
+        L'index doit être de type datetime ou équivalent pour garantir un traçage correct.
+    var : str
+        Nom de la variable cible à prédire, correspondant à l'une des colonnes de `data`.
+    model_fit : statsmodels.tsa.api.VARResultsWrapper
+        Modèle VAR ajusté (fit) aux données historiques, utilisé pour effectuer les prévisions.
+
+    Description:
+    ------------
+    1. Utilise le modèle VAR ajusté pour effectuer des prévisions sur une période de 14 jours.
+    2. Les prévisions sont générées pour toutes les variables du modèle, mais seul le résultat
+       de la variable cible spécifiée (`var`) est tracé.
+    3. Affiche un graphique comparant les données historiques avec les prévisions pour la période future.
+
+    Returns:
+    --------
+    pandas.DataFrame
+        DataFrame contenant les prévisions pour toutes les variables du modèle VAR, indexées par les dates
+        futures (par défaut, 14 jours).
+
+    Notes:
+    ------
+    - Le nombre de jours pour les prévisions est fixé à 14 par défaut, mais peut être ajusté en modifiant `forecast_steps`.
+    - La visualisation montre uniquement la variable cible spécifiée dans `var`.
+    - Assurez-vous que `data` contient les mêmes variables que celles utilisées pour ajuster `model_fit`.
+    """
     forecast_steps = 14 #2semaines
     forecast = model_fit.forecast(y=data.values, steps=forecast_steps)
     forecast_df = pd.DataFrame(forecast, index=pd.date_range(max(data.index), periods=forecast_steps+1, freq='D')[1:], columns=data.columns)
@@ -94,8 +203,53 @@ def prevision_var(data,var,model_fit):
     
     return forecast_df
 
+
+
 def indice_eval (polluants,forecast,data,test) :
-    
+    """
+    Calcule un indice synthétique d'évaluation des erreurs de prévision pour plusieurs polluants, 
+    en pondérant les erreurs par l'inverse des moyennes des polluants.
+
+    Parameters:
+    -----------
+    polluants : list
+        Liste des noms des colonnes représentant les polluants à évaluer.
+    forecast : pandas.DataFrame
+        DataFrame contenant les valeurs prédites pour chaque polluant, indexé par les mêmes dates que `test`.
+    data : pandas.DataFrame
+        DataFrame contenant les valeurs historiques utilisées pour le calcul des moyennes des polluants.
+    test : pandas.DataFrame
+        DataFrame contenant les valeurs réelles (observées) des polluants correspondant aux prévisions dans `forecast`.
+
+    Returns:
+    --------
+    float
+        Indice synthétique d'évaluation, pondérant les erreurs par l'inverse des moyennes des concentrations des polluants.
+
+    Description:
+    ------------
+    1. Pour chaque polluant dans la liste `polluants`, la fonction calcule le rapport entre l'erreur quadratique moyenne
+       (RMSE) des prévisions et la moyenne historique des concentrations.
+    2. Les erreurs sont ensuite pondérées par l'inverse des moyennes historiques pour équilibrer les contributions des différents polluants.
+    3. Le résultat est un indice synthétique unique qui reflète la qualité des prévisions sur l'ensemble des polluants.
+
+    Notes:
+    ------
+    - Assurez-vous que les colonnes spécifiées dans `polluants` sont présentes dans les DataFrames `forecast`, `data`, et `test`.
+    - La fonction `root_mean_squared_error` doit être définie dans l'environnement.
+    - Ce type d'indice est particulièrement utile lorsque les concentrations des polluants ont des ordres de grandeur différents,
+      ce qui pourrait biaiser une évaluation globale simple.
+
+    Example:
+    --------
+    polluants = ['pm10', 'pm2_5', 'ozone', 'nitrogen_dioxide', 'sulphur_dioxide']
+    forecast = pd.DataFrame({'pm10': [20, 25], 'pm2_5': [15, 18], ...})
+    data = pd.DataFrame({'pm10': [50, 55, 60], 'pm2_5': [30, 35, 40], ...})
+    test = pd.DataFrame({'pm10': [22, 27], 'pm2_5': [16, 20], ...})
+    indice = indice_eval(polluants, forecast, data, test)
+    print(indice)
+    0.2451
+    """
     indice = 0 
     sum_inv_mean = 0
     for col in polluants : 

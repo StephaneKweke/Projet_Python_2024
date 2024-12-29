@@ -61,6 +61,46 @@ def get_subindex_so2(value):
     
 
 def atmo(df_hourly, regions):
+
+    """
+    Calcule l'indice Atmo quotidien pour différentes régions à partir de données horaires, 
+    en suivant les critères de sous-indices pour les principaux polluants atmosphériques.
+
+    Parameters:
+    -----------
+    df_hourly : pandas.DataFrame
+        DataFrame contenant des données horaires avec les colonnes suivantes :
+        - 'day' : Date correspondant au jour des données.
+        - 'region' : Région associée aux données.
+        - 'pm10', 'pm2_5', 'nitrogen_dioxide', 'ozone', 'sulphur_dioxide' : Concentrations horaires des polluants.
+        - 'temperature_2m', 'relative_humidity_2m', 'precipitation', 'surface_pressure', 'wind_speed_10m' : Variables climatiques.
+    regions : list
+        Liste des régions à inclure dans le calcul de l'indice Atmo.
+
+    Returns:
+    --------
+    pandas.DataFrame
+        DataFrame contenant les moyennes journalières des variables, les sous-indices calculés 
+        pour chaque polluant, et l'indice Atmo final. Les colonnes incluent :
+        - 'day' : Date correspondant au jour.
+        - 'region' : Région associée aux données.
+        - Moyennes des variables (e.g., 'pm10', 'pm2_5', etc.).
+        - Sous-indices calculés pour chaque polluant (e.g., 'subindex_pm10', 'subindex_pm2_5', etc.).
+        - 'indice_atmo' : Indice Atmo final calculé comme le maximum des sous-indices.
+    
+    Description:
+    ------------
+    1. Calcule les moyennes journalières des variables à partir des données horaires.
+    2. Calcule les sous-indices pour chaque polluant selon les règles définies par les fonctions associées (e.g., `get_subindex_pm10`).
+    3. Calcule l'indice Atmo final comme le maximum des sous-indices pour chaque jour et chaque région.
+    4. Filtre les données pour inclure uniquement les régions spécifiées dans la liste `regions`.
+
+    Notes:
+    ------
+    - L'indice pour l'ozone est calculé à partir de la moyenne glissante maximale sur 8 heures.
+    - Assurez-vous que les fonctions `get_subindex_pm10`, `get_subindex_pm2_5`, `get_subindex_no2`, 
+      `get_subindex_o3` et `get_subindex_so2` sont disponibles dans l'environnement.
+    """
     
         # Calcul des moyennes journalières pour toutes les variables
     daily_data = df_hourly.groupby(['day', 'region']).agg({
