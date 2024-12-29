@@ -48,7 +48,7 @@ Notre projet a donc pour objectif:
 ## 3. 📚 Sources des données  
 
 Les données utilisées dans ce projet proviennent des sources suivantes :  
-- **🌐 Open-Meteo API** : Récupération des données climatiques horaires (température, précipitations, pression, etc.). https://open-meteo.com/en/docs/air-quality-api
+- **🌐 Open-Meteo API** : Récupération des données de qualité de l'air et des données climatiques horaires (température, précipitations, pression, etc.). https://open-meteo.com/en/docs/air-quality-api
 - **🗂️ Bases de données de l'INSEE** : Données cartographiques sur les régions.  
 
 ---
