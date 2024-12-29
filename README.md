@@ -1,5 +1,5 @@
 # 🌤️ Prédiction de la qualité de l'air en France  
-## 🌡️ Les variables climatiques comme la température, les précipitations, etc. nous aident-elles pour une meilleure prédiction  
+## 🌡️ Les variables climatiques comme la température, les précipitations, etc. nous aident-elles pour une meilleure prédiction? 
 **Par [], 2024**
 
 ---
