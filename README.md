@@ -59,10 +59,12 @@ Les données utilisées dans ce projet proviennent des sources suivantes :
 
 2. **Dossier `scripts` :**  
    Contient des fonctions utiles, notamment :  
-   - `📂 fetch_data.py` : Récupération des données climatiques.  
-   - `📂 train_models.py` : Entraînement des modèles ARIMA, VAR, et Random Forest.  
-   - `📂 predict.py` : Génération des prévisions futures.  
-   - `📂 evaluate_models.py` : Calcul des métriques et des indices d’évaluation.  
+   - `prevision_arima` : Génère des prévisions à court terme à l'aide d'un modèle ARIMA et visualise les résultats.  
+   - `train_predict_visualize` : Entraîne un modèle Random Forest, prédit les valeurs futures, visualise les résultats, 
+    et calcule les importances des caractéristiques 
+   - `prevision_var ` : Génère des prévisions à court terme à l'aide d'un modèle VAR et visualise les résultats  
+   - `atmo` : Calcule l'indice Atmo quotidien pour différentes régions à partir de données horaires, 
+    en suivant les critères de sous-indices pour les principaux polluants atmosphériques.  
 
 ---
 
