@@ -68,5 +68,5 @@ Les données utilisées dans ce projet proviennent des sources suivantes :
 
 ## 5. ⚖️ Licence  
 
-Ce projet est distribué sous la licence **On ne sait pas encore**. Vous êtes libre de le partager, modifier et distribuer, à condition que vos contributions respectent les mêmes termes.  
+Ce projet est distribué sous la licence **GNU General Public License (GPL)**. Vous êtes libre de le partager, modifier et distribuer, à condition que vos contributions respectent les mêmes termes.  
 Consultez le fichier `LICENSE` pour plus de détails.  
