@@ -20,9 +20,13 @@
 
 📈 Dans une deuxième partie, notre projet se concentre sur la prévision des concentrations des gaz polluants ci-dessus, en Île-de-France, la région la plus urbanisée et industrialisée en France 🏙️, pour la période entre le 01-12-2024 et le 14-12-2024, en se basant sur plusieurs variables climatiques (température 🌡️, pression 📉, précipitations 🌧️, …), à partir de modèles :
 
-VAR (**Vector Auto-Regressive**) 📊 : un modèle statistique utilisé pour traiter les relations linéaires entre plusieurs variables, en considérant la dépendance de chaque variable par rapport à ses propres valeurs passées et aux valeurs passées des autres variables.
-ARIMA (**AutoRegressive Integrated Moving Average**) 📈 : un modèle de séries temporelles utilisé pour comprendre et prédire les valeurs futures en tenant compte des dépendances et des valeurs passées.
-RF (**Random Forest**) 🌳 : un modèle d’apprentissage utilisant les prédictions agrégées de plusieurs arbres de décision, capturant ainsi avec précision les multiples relations non linéaires entre les variables explicatives et la variable cible.
+* ARIMA (**AutoRegressive Integrated Moving Average**) 📈 : un modèle de séries temporelles utilisé pour comprendre et prédire les valeurs futures en tenant compte des dépendances et des valeurs passées.
+
+* VAR (**Vector Auto-Regressive**) 📊 : un modèle statistique utilisé pour traiter les relations linéaires entre plusieurs variables, en considérant la dépendance de chaque variable par rapport à ses propres valeurs passées et aux valeurs passées des autres variables.
+
+* RF (**Random Forest**) 🌳 : un modèle d’apprentissage utilisant les prédictions agrégées de plusieurs arbres de décision, capturant ainsi avec précision les multiples relations non linéaires entre les variables explicatives et la variable cible.
+
+  
 ✨ Ce projet vise à fournir des outils prédictifs et des indicateurs synthétiques pour mieux comprendre et anticiper les variations de la qualité de l’air en France, contribuant à des actions concrètes pour réduire l’impact de la pollution atmosphérique.
  
 
@@ -31,11 +35,12 @@ RF (**Random Forest**) 🌳 : un modèle d’apprentissage utilisant les prédic
 ## 2. 🎯 Objectifs  
 
 Notre projet a donc pour objectif:
-1. **Analyser la qualité de l’air.**
+1. **Analyser la qualité de l’air en France.**
 2. **Prédire les concentrations de polluants à travers différentes approches.**
 3. **Comparer la performance de ces approches.**
+4. **Evaluer si les variables climatiques permettent d'améliorer les prévisions de la qualité de l'air**
 
-# L’objectif ultime de cette démarche est donc d’essayer d’atténuer les effets néfastes de la pollution d’air sur la qualité de vie des individus et sur l’environnement dans lequel ils vivent.
+### L’objectif ultime de cette démarche est donc d’essayer d’atténuer les effets néfastes de la pollution d’air sur la qualité de vie des individus et sur l’environnement dans lequel ils vivent.
  
 
 ---
@@ -43,9 +48,8 @@ Notre projet a donc pour objectif:
 ## 3. 📚 Sources des données  
 
 Les données utilisées dans ce projet proviennent des sources suivantes :  
-- **🌐 Open-Meteo API** : Récupération des données climatiques horaires (température, précipitations, pression, etc.).  
-- **🗂️ Bases de données locales** : Données historiques des concentrations des polluants issues de mesures locales ou simulées.  
-- **🔢 Scripts générés** : Synthèse des variables issues des calculs internes pour enrichir les analyses.  
+- **🌐 Open-Meteo API** : Récupération des données climatiques horaires (température, précipitations, pression, etc.). https://open-meteo.com/en/docs/air-quality-api
+- **🗂️ Bases de données de l'INSEE** : Données cartographiques sur les régions.  
 
 ---
 
@@ -54,16 +58,16 @@ Les données utilisées dans ce projet proviennent des sources suivantes :
 ### Structure principale du dépôt :  
 1. **Fichiers principaux :**  
    - `📓 notebook_final.ipynb` : Contient l’intégralité du projet avec les analyses et commentaires.  
-   - `📓 main_executed.ipynb` : Version exécutée incluant les résultats obtenus pour chaque étape de l’analyse, même en cas d’inaccessibilité des données externes.  
-
+   - `📓 Infos_géographiques_france.ipynb` : Contient les données géographiques de la France ainsi que les centroïdes des régions
+   - `📓 Base_de_données_final.ipynb` : Contient le code necessaire pour construire la base de données finale par API
+   - `📓 Statdesc.ipynb` : Contient le code necessaire à la constitution des statistiques descriptives du projet ( notes : il a servi de base pour la constitution du notebook, car il a servi à la création de fonctions de visualisation pour améliorer la lisibilité du projet)
+     
 2. **Dossier `scripts` :**  
-   Contient des fonctions utiles, notamment :  
-   - `prevision_arima` : Génère des prévisions à court terme à l'aide d'un modèle ARIMA et visualise les résultats.  
-   - `train_predict_visualize` : Entraîne un modèle Random Forest, prédit les valeurs futures, visualise les résultats, 
-    et calcule les importances des caractéristiques 
-   - `prevision_var ` : Génère des prévisions à court terme à l'aide d'un modèle VAR et visualise les résultats  
-   - `atmo` : Calcule l'indice Atmo quotidien pour différentes régions à partir de données horaires, 
-    en suivant les critères de sous-indices pour les principaux polluants atmosphériques.  
+   Contient des fichiers de fonctions, notamment :  
+   - `api.py` : contient les fonctions de récupération des données par API.  
+   - `dataviz.py` : contient toutes les fonctions de visualisation des des données (graphiques,...)
+   - `modele.py ` : contient des fonctions utiles à la modélisation, en l'occurence les tests de stationnarité, les prévisions...  
+   - `indice.py` : Contient les fonctions necessaires au calcul des sous-indices ainsi que de l'indice ATMO 
 
 ---
 
