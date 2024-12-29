@@ -210,7 +210,7 @@ def plot_pollutants(
     pollutants,
     region_label_col='LIBELLE_REGION',
     fig_size=(30, 30),
-    cmap='viridis',
+    cmap='Greys',
     title_prefix="Carte de chaleur",
     xlim=None,
     ylim=None
